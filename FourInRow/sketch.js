@@ -16,22 +16,34 @@ let board=[
     ['', '', '', '', '', '']
 ];
 
+function preload(){
+    bouncingBallSound=loadSound("output.mp3");
+    winningSound=loadSound("drumRoll.wav");
+}
+
 function setup() {
-    createCanvas(700,700);
+    title = createP('Four in a Row');
+    title.position(600,0);
+    title.size(6000);
+
+    let cnv=createCanvas(700,700);
+    cnv.position(70,130);
     w=width/7;
-    frameRate(4);
 }
 
 function mousePressed(){
+    if(win==0 || win==1 || win==2){
+        return false;
+    }
     let mousePlaced=mousePosition;
     console.log(mousePlaced);
     if(board[mousePlaced][0] ==''){
         board[mousePlaced][0]=players[currentPlayer];
-
         let i=0;
         while(true){
             if(board[mousePlaced][i+1] != ''){
                 checkWinner((i), mousePlaced);
+                bouncingBallSound.play();
                 console.log("jhgh"+(i)+"JKJ"+mousePlaced);
                 break;
             }
@@ -41,9 +53,20 @@ function mousePressed(){
             }
             i++;
         }
-        
         currentPlayer=(currentPlayer+1)%2;
 
+    }
+    else{
+        let noPlace=0;
+        for(let i=0;i<rows;i++){
+            if(board[i][0] == ''){
+                noPlace=1;
+            }
+        }
+        // Tie game
+        if(noPlace==0){
+            win=2;
+        }
     }
    
     
@@ -146,14 +169,17 @@ function draw() {
             console.log("winner is"+players[0]);
             fill(0,0,255);
             text("winner is ."+players[0], width/2, w/2);
+            winningSound.play();
         }
         else if(win==1){
             fill(255,0,0);
             console.log("winner is"+players[1]);
             text("winner is ."+players[1], width/2, w/2);
+            winningSound.play();
         }
         else if(win == 2){
             console.log("tie");
+            fill(0,0,255);
             text("It is a tie.", width/2, w/2);
         }
         noLoop();
