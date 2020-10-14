@@ -4,7 +4,7 @@ let w;
 let dw=80, mousePosition;
 let players=['B', 'R'];
 let currentPlayer=0;
-let win=4;
+let win=4, gameMode;
 
 let board=[
     ['', '', '', '', '', ''], 
@@ -23,13 +23,23 @@ function preload(){
 
 function setup() {
     title = createP('Four in a Row');
-    title.position(600,0);
-    title.size(6000);
+    title.position(0,0);
+    title.size(300);
+
+    sel = createSelect();
+    sel.position(0, 120);
+    sel.option('human vs Human', 'hvh');
+    sel.option('human vs AI', 'hva');
+    sel.changed(mySelectEvent);
 
     let cnv=createCanvas(700,700);
-    cnv.position(70,130);
+    cnv.position(330,130);
     w=width/7;
 }
+
+function mySelectEvent() {
+    gameMode = sel.value();
+  }
 
 function mousePressed(){
     if(win==0 || win==1 || win==2){
@@ -72,6 +82,7 @@ function mousePressed(){
     
 }
 
+// i- row, j- cloumn
 function checkWinner(i,j){
     let piece=board[j][i], count=0;
 
@@ -97,7 +108,7 @@ function checkWinner(i,j){
     l=i+1;
     m=j;
     
-    while(l>=0 && piece == board[j][l] && count<3){
+    while(l<6 && piece == board[j][l] && count<3){
         count++;
         l++;
     }
@@ -106,22 +117,48 @@ function checkWinner(i,j){
         return;
     }
 
-    // Diagonal
-    // l=i;
-    // m=j+1;
-    // while(m<7 && piece == board[m][i] && count<3){
-    //     count++;
-    //     m++;
-    // }
-    // m=j-1;
-    // while(m>=0 && piece == board[m][i] && count<3){
-    //     count++;
-    //     m--;
-    // }
-    // if(count==3){
-    //     win=currentPlayer;
-    //     return;
-    // }
+    // Diagonal- right-top and bottom-left
+    l=i-1;
+    m=j+1;
+    count=0;
+    while(l>=0 && m<7 && piece == board[m][l] && count<3){
+        count++;
+        l--;
+        m++;
+    }
+    l=i+1;
+    m=j-1;
+    while(l<6 && m>=0 && piece == board[m][l] && count<3){
+        count++;
+        l++;
+        m--;
+    }
+    if(count==3){
+        win=currentPlayer;
+        return;
+    }
+
+     // Diagonal- left-top and bottom-right     
+     l=i-1;
+     m=j-1;
+     count=0;
+     while(l>=0 && m>=0 && piece == board[m][l] && count<3){
+        count++;
+        l--;
+        m--;
+     }
+     
+     l=i+1;
+     m=j+1;
+     while(l<6 && m<7 && piece == board[m][l] && count<3){
+        count++;
+        l++;
+        m++;
+     }
+     if(count==3){
+         win=currentPlayer;
+         return;
+     }
 
 }
 
